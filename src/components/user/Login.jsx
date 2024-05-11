@@ -35,10 +35,16 @@ const Login = () => {
             setLoading(true)
             signInWithEmailAndPassword(auth, email, pass)
             .then(success=>{
-                // alert("로그인 성공!");
+                alert("로그인 성공!");
                 setLoading(false);
                 sessionStorage.setItem('email', email); // 전체 페이지에서 다 사용할 수 있는 공간에 이 이메일을 넣음
-                navi('/') // 홈으로 이동
+                sessionStorage.setItem('uid', success.user.uid)
+
+                if(sessionStorage.getItem('target')) {
+                    navi(sessionStorage.getItem('target'));
+                }else{
+                    navi('/'); // 홈으로 이동
+                }
             })
             .catch(error=> {
                 alert("에러 : " + error.message);
