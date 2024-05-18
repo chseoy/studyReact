@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { Row, Col, Card, InputGroup, Form, Button } from 'react-bootstrap'
 import {app} from '../../firebaseInit'
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth'
+import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword} from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 
-const Login = () => {
-
+const Join = () => {
     const navi = useNavigate();
 
     const auth = getAuth(app); // 파이어베이스 인증 서비스 가져옴
@@ -31,20 +30,13 @@ const Login = () => {
         if(email === "" || pass === "") {
             alert("이메일과 비밀번호를 입력하세요.")
         }else{
-            // 로그인 체크
+            // 이메일 가입
             setLoading(true)
-            signInWithEmailAndPassword(auth, email, pass)
+            createUserWithEmailAndPassword(auth, email, pass)
             .then(success=>{
-                alert("로그인 성공!");
+                alert("이메일 가입 성공!");
                 setLoading(false);
-                sessionStorage.setItem('email', email); // 전체 페이지에서 다 사용할 수 있는 공간에 이 이메일을 넣음
-                sessionStorage.setItem('uid', success.user.uid)
-
-                if(sessionStorage.getItem('target')) {
-                    navi(sessionStorage.getItem('target'));
-                }else{
-                    navi('/'); // 홈으로 이동
-                }
+                navi('/login');
             })
             .catch(error=> {
                 alert("에러 : " + error.message);
@@ -60,7 +52,7 @@ const Login = () => {
         <Col md={6}>
             <Card>
                 <Card.Header>
-                    <h3 className='text-center'>로그인</h3>
+                    <h3 className='text-center'>회원가입</h3>
                 </Card.Header>
                 <Card.Body>
                     <form onSubmit={onSubmit}>
@@ -73,10 +65,7 @@ const Login = () => {
                             <Form.Control name='pass' type='password' value={pass} onChange={onChange}/>
                         </InputGroup>
                         <div>
-                            <Button className='w-100' type='submit'>로그인</Button>
-                        </div>
-                        <div className='text-end'>
-                            <a href='/join'>회원가입</a>
+                            <Button className='w-100' type='submit'>회원가입</Button>
                         </div>
                     </form>
                 </Card.Body>
@@ -86,4 +75,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Join

@@ -23,10 +23,10 @@ const Books = () => {
             headers:{
                 "Authorization" : "KakaoAK 3b06b87b5ecf6eb05c3de92d42cad9e8"
             }
-        };
+        }
         const res = await axios.get(url, config);
-        console.log(res.data);
         setBooks(res.data.documents);
+        console.log(res.data);
         setEnd(res.data.meta.is_end);
 
         setLoading(false);
