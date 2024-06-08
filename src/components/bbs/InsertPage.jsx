@@ -34,7 +34,7 @@ const InsertPage = () => {
     return (
         <Row className='my-5 justify-content-center'>
             <Col xs={12} md={10} lg={8}>
-                <h1>글쓰기</h1>
+                <h1>게시글 작성</h1>
                 <div className='mt-5'>
                     <Form.Control name='title' value={title} placeholder='제목을 입력하세요.' className='mb-2' onChange={onChangeForm}/>
                     <Form.Control name='contents' value={contents} as='textarea' rows={10} placeholder='내용을 입력하세요.' onChange={onChangeForm}/>

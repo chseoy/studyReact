@@ -14,6 +14,7 @@ const Locals = () => {
     const [query, setQuery] = useState('인하대학교');
     const [page, setPage] = useState(1);
     const [locals, setLocals] = useState([]);
+    const [end, setEnd] = useState();
 
     const callAPI = async() => {
         setLoading(true);
@@ -22,16 +23,17 @@ const Locals = () => {
             headers:{
                 "Authorization" : "KakaoAK 3b06b87b5ecf6eb05c3de92d42cad9e8"
             }
-        }
+        };
         const res = await axios.get(url, config);
         setLocals(res.data.documents);
         console.log(res.data.documents);
+        setEnd(res.data.meta.is_end);
         setLoading(false);
     }
 
     useEffect(() => {
         callAPI();
-    }, []);
+    }, [page]);
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -39,27 +41,26 @@ const Locals = () => {
             alert("검색어를 입력하세요.");
         } else {
             callAPI();
+            setPage(1);
         }
     }
 
     const onClickFavorite = async (local) => {
-        if(!uid) {
+        if(uid) {
+            if(window.confirm(`즐겨찾기에 추가합니다.`)) {
+                console.log(local);
+                await get(ref(db, `favorite/${uid}/${local.id}`)).then(async snapshot => {
+                    if(snapshot.exists()) {
+                        alert('이미 즐겨찾기에 등록되었습니다.');
+                    } else {
+                        await set(ref(db, `favorite/${uid}/${local.id}`), local);
+                        alert('등록되었습니다.')
+                    }
+                });
+            }
+        } else {
             sessionStorage.setItem('target', '/locals');
             navi('/login');
-            return;
-        }
-        if(window.confirm("즐겨찾기에 추가 하시겠습니까?")) {
-            console.log(local);
-            setLoading(true);
-            await get(ref(db, `favorite/${uid}/${local.id}`)).then(async snapshot => {
-                if(snapshot.exists()) {
-                    alert("이미 즐겨찾기에 등록되었습니다.");
-                } else {
-                    await set(ref(db, `favorite/${uid}/${local.id}`), local);
-                    alert("즐겨찾기에 등록되었습니다.");
-                }
-            });
-            setLoading(false);
         }
     }
 
@@ -101,6 +102,11 @@ const Locals = () => {
                 )}
             </tbody>
         </Table>
+        <div className='text-center my-3'>
+          <Button variant="light" onClick={()=>setPage(page-1)} disabled={page===1}>이전</Button>
+          <span className='mx-2'>{page}</span>
+          <Button variant="light" onClick={()=>setPage(page+1)} disabled={end}>다음</Button>
+        </div>
     </div>
     )
 }
